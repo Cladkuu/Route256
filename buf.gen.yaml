@@ -1,0 +1,21 @@
+version: v1
+plugins:
+  - name: go
+    path: bin/protoc-gen-go
+    out: pkg/
+    opt:
+      - paths=source_relative
+  - name: go-grpc
+    path: bin/protoc-gen-go-grpc
+    out: pkg/
+    opt:
+      - paths=source_relative
+  - name: protoc-gen-grpc-gateway
+    path: bin/protoc-gen-grpc-gateway
+    out: pkg/
+    opt:
+      - paths=source_relative
+      - generate_unbound_methods=true
+  - name: openapiv2
+    path: bin/protoc-gen-openapiv2
+    out: pkg/

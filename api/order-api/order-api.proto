@@ -1,0 +1,177 @@
+syntax="proto3";
+
+package app.go.order;
+
+option go_package="https://gitlab.ozon.dev/astoyakin/route256/pkg/order-api";
+
+import "google/api/annotations.proto";
+
+service OrderApi{
+  // ручка для создания нового заказа
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse){
+    option (google.api.http) = {
+      post: "/v1/order"
+      body: "*"
+    };
+  }
+  // ручка для получения всех имеющихся в системе заказов
+  rpc GetAllOrders(GetAllOrdersRequest) returns(GetAllOrdersResponse){
+    option (google.api.http) = {
+      get: "/v1/orders"
+    };
+  }
+  // ручка для получения заказа по его идентификатору
+  rpc GetOrderById(GetOrderByIdRequest) returns (GetOrderByIdResponse){
+    option (google.api.http) = {
+      post: "/v1/order/get"
+      body: "*"
+    };
+  }
+  // ручка для отмены заказа по его идентификатору
+  rpc CancelOrder(CancelOrderRequest) returns(CancelOrderResponse){
+    option (google.api.http) = {
+      post: "/v1/order/cancel"
+      body: "*"
+    };
+  }
+  // ручка для изменения статуса заказа
+  rpc ChangeStatus(ChangeStatusRequest) returns(ChangeStatusResponse){
+    option (google.api.http) = {
+      put: "/v1/order/status"
+      body: "*"
+    };
+  }
+  // ручка для обнуления стоимости заказа по его идентификатору
+  rpc ResetOrderPrice(ResetOrderPriceRequest) returns(ResetOrderPriceResponse){
+    option (google.api.http) = {
+      put: "/v1/order/price"
+      body: "*"
+    };
+  }
+
+  // ручка для получения данных по заказу в стриме
+  rpc GetAllOrdersStream(stream GetOrderByIdRequest) returns (stream GetOrderByIdResponse) {}
+
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// CreateOrder endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+message CreateOrderRequest{
+  // Стоимость заказа
+  int32 price=2;
+  // Валюты оплаты заказа
+  string currency=3;
+  // Код выдачи заказа
+  string orderCode=4;
+}
+
+message CreateOrderResponse{
+  // Идентификатор заказа
+  int64 id=1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// GetAllOrders endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+
+message GetAllOrdersRequest{
+
+  message Pagination{
+    int32 page=1;
+    int32 pageSize=2;
+    enum sortCriteria{
+      asc=0;
+      desc=1;
+    }
+    sortCriteria sort=3;
+  }
+  Pagination pagination=1;
+
+}
+
+message GetAllOrdersResponse{
+  repeated Order order=1;
+}
+// ---------------------------------------------------------------------------------------------------------------------
+// GetOrderById endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+
+message GetOrderByIdRequest{
+  // Идентификатор заказа
+   int64 id=1;
+}
+
+message GetOrderByIdResponse{
+   Order order=1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// CancelOrder endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+
+message CancelOrderRequest{
+  // Идентификатор заказа
+  int64 id=1;
+}
+
+message CancelOrderResponse{
+  // Результат выполнения операции
+  bool result=1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// ChangeStatus endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+message ChangeStatusRequest{
+  // Идентификатор заказа
+  int64 id=1;
+  // Статус заказа
+  Status status=2;
+}
+
+message ChangeStatusResponse{
+  // Результат выполнения операции
+  bool result=1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// ResetOrderPrice endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+
+message ResetOrderPriceRequest{
+  // Идентификатор заказа
+  int64 id=1;
+}
+
+message ResetOrderPriceResponse{
+  // Результат выполнения операции
+  bool result=1;
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Common messages
+// ---------------------------------------------------------------------------------------------------------------------
+// Объект Заказ
+message Order{
+  // статус заказа
+  string status =1;
+  // цена заказа
+  int32 price=2;
+  // валюта оплаты заказа
+  string currency=3;
+}
+
+// Статусная модель заказа
+enum Status{
+  UNKNOWN=0;
+  NEW=1;
+  IN_PACKAGING=2;
+  IN_DELIVERY=3;
+  RECEIVED=4;
+  CANCELLED=5;
+}
+
+
+
