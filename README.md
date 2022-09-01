@@ -1,7 +1,5 @@
 # Route256
 
-Telegram bot: https://t.me/astoyakin_demo_bot
-
 Сервера:
 - Grpc-сервер работает на порту 8081
 - HTTP-сервер работает на порту 8085
